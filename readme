@@ -20,7 +20,6 @@ API
 	- rdi: char **str_ptr
 	      on entry: *str_ptr points to the first character to try
 	      on return: *str_ptr points to the first non-digit character
-	- esi: int base
 	- rax: parsed integer (0 if no digit found)
 
 	* intstr: converts a signed integer to its decimal string
@@ -63,7 +62,6 @@ USAGE
 			leaq  .input(%rip), %rax
 			movq  %rax, .ptr(%rip)
 			leaq  .ptr(%rip), %rdi
-			movq  $10, %rsi
 			call  strint # rax = 42
 
 	intstr:
