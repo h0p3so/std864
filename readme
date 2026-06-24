@@ -1,0 +1,90 @@
+
+	std864: reusable x86_64 assembly functions
+
+API
+	* strlen: returns the length of a null-terminated string
+	- rdi: const char *s
+	- rax: length of the string (excluding null terminator)
+
+	* isdigit: checks whether a byte is an ASCII decimal digit
+	- dil: unsigned char
+	- rax: 1 if '0'-'9', 0 otherwise
+
+	* fill: fills a buffer with a repeated byte value
+	- rdi: void *dest
+	- rsi: size_t count
+	- rdx: int value (byte)
+	- rax: number of bytes written (always equals count)
+
+	* strint: parses decimal digits from a string into an integer
+	- rdi: char **str_ptr
+	      on entry: *str_ptr points to the first character to try
+	      on return: *str_ptr points to the first non-digit character
+	- esi: int base
+	- rax: parsed integer (0 if no digit found)
+
+	* intstr: converts a signed integer to its decimal string
+	- rdi: int64_t n
+	- rsi: int base
+	- rdx: size_t *len_out (receives the string length)
+	- rax: char * (pointer to an internal static buffer)
+
+DEPENDENCIES
+	strint - calls isdigit
+
+	All other functions are standalone.
+
+USAGE
+	All functions follow the System V AMD64 ABI. Arguments are passed in
+	%rdi, %rsi, %rdx and the return value is placed in %rax.
+	Caller-saved registers are clobbered; callee-saved registers (%rbx,
+	%rbp, %r12-%r15) are preserved unless documented otherwise.
+
+	strlen:
+		leaq  .msg(%rip), %rdi
+		call  strlen # rax = 5 (for "hello")
+
+	isdigit:
+		mov	  $'5', %dil
+		call  isdigit # rax = 1
+
+	fill:
+		leaq  .buf(%rip), %rdi
+		movq  $16, %rsi
+		movq  $'z', %rdx
+		call  fill # fills buf with 16 'z's
+
+	strint:
+		.section .data
+			.input: .string "42"
+		.section .bss
+			.ptr: .zero 8
+		.section .text
+			leaq  .input(%rip), %rax
+			movq  %rax, .ptr(%rip)
+			leaq  .ptr(%rip), %rdi
+			movq  $10, %rsi
+			call  strint # rax = 42
+
+	intstr:
+		.section .bss
+			.len: .zero 8
+		.section .text
+			movq  $1234, %rdi
+			movq  $10, %rsi
+			leaq  .len(%rip), %rdx
+			call  intstr # rax = "1234"
+
+ERRORS
+	* strint: If no digit is found at *str_ptr, the function returns 0
+	  and *str_ptr is not advanced.
+
+NOTES
+	* Platform: x86_64 Linux only — uses write (syscall 1) and exit
+	  (syscall 60) directly in the tests.
+
+	* Static buffers: intstr uses a 32-byte internal static buffer in
+	  .bss for its string output. It is not thread-safe.
+
+	* Testing: Each test.S is a standalone program with its own _start
+	  entry point. Tests write their output to stdout and exit.
