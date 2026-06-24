@@ -1,5 +1,5 @@
 .section .data
-	.input: .string "42"
+	.input: .string "-42"
 
 .section .bss
 	.str_ptr: .zero 8
@@ -11,13 +11,12 @@
 _start:
 	leaq	.input(%rip), %rax
 	movq	%rax, .str_ptr(%rip)
-
 	leaq	.str_ptr(%rip), %rdi
 	movq	$10, %rsi
 	call	strint
 
 	movq	%rax, %rdi
-	movq	$10, %rsi
+	movq	$2, %rsi
 	leaq	.length(%rip), %rdx
 	call	intstr
 
