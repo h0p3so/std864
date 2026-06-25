@@ -1,5 +1,5 @@
 
-	std864: reusable x86_64 assembly functions
+	std864: tiny reusable functions for x86_64 programs
 
 API
 	* strlen: returns the length of a null-terminated string
