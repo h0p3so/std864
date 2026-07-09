@@ -4,8 +4,8 @@
 .globl _start
 
 _start:
-	movq	$-1234, %rdi
-	movq	$2, %rsi
+	movq	$0, %rdi
+	movq	$10, %rsi
 	leaq	.length(%rip), %rdx
 	call	intstr
 

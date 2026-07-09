@@ -58,9 +58,11 @@ intstr:
 .__intstr_init_trivial:
 	movq	-28(%rbp), %rax
 	movb	$'0', (%rax)
+	decq	%rax
+	movq	%rax, -28(%rbp)
 	movq	-20(%rbp), %rax
 	movq	$1, (%rax)
-	jmp	.__intstr_fini
+	jmp	.__intstr_fini_ret
 .__intstr_loop:
 	movq	-8(%rbp), %rax
 	movl	-12(%rbp), %ebx
