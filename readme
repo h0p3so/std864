@@ -86,3 +86,7 @@ NOTES
 
 	* Testing: Each test.S is a standalone program with its own _start
 	  entry point. Tests write their output to stdout and exit.
+	
+AUTHOR
+	Juan Diego PM (h0p3so)
+
